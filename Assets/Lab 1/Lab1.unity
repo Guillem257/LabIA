@@ -972,7 +972,7 @@ GameObject:
   - component: {fileID: 49334338}
   - component: {fileID: 49334337}
   - component: {fileID: 49334336}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1077,7 +1077,7 @@ GameObject:
   - component: {fileID: 104265700}
   - component: {fileID: 104265699}
   - component: {fileID: 104265698}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2130,7 +2130,7 @@ Transform:
   m_GameObject: {fileID: 324170696}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24.47, y: 1, z: 25.79}
+  m_LocalPosition: {x: 20.4, y: 1, z: 25.79}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5141,6 +5141,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 606365712}
+  - component: {fileID: 606365713}
   m_Layer: 0
   m_Name: CameraPivot
   m_TagString: Untagged
@@ -5164,6 +5165,19 @@ Transform:
   - {fileID: 139245461}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 30, y: 45, z: 0}
+--- !u!114 &606365713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606365711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ded0a02597400e4db7c05ad96e5f9ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 496577146}
 --- !u!1 &622490957
 GameObject:
   m_ObjectHideFlags: 0
@@ -6110,7 +6124,7 @@ GameObject:
   - component: {fileID: 789450451}
   - component: {fileID: 789450450}
   - component: {fileID: 789450449}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6301,7 +6315,7 @@ GameObject:
   - component: {fileID: 860399227}
   - component: {fileID: 860399226}
   - component: {fileID: 860399225}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6965,7 +6979,7 @@ MonoBehaviour:
   m_Center: {x: 0, y: 2, z: 0}
   m_LayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 255
   m_UseGeometry: 0
   m_DefaultArea: 0
   m_GenerateLinks: 0
@@ -8011,7 +8025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1374914886}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: ---Patrol Points---
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8562,7 +8576,7 @@ GameObject:
   - component: {fileID: 1652163534}
   - component: {fileID: 1652163533}
   - component: {fileID: 1652163532}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9259,7 +9273,7 @@ GameObject:
   - component: {fileID: 1887575322}
   - component: {fileID: 1887575321}
   - component: {fileID: 1887575320}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
