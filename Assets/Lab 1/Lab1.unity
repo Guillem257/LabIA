@@ -4967,6 +4967,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &562437338
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 562437339}
+  m_Layer: 0
+  m_Name: CentrePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &562437339
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562437338}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 30, y: 0, z: 30}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &569490802
 Mesh:
   m_ObjectHideFlags: 0
@@ -7507,7 +7538,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1169833723
 Transform:
   m_ObjectHideFlags: 0
@@ -8103,7 +8134,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 1375672376}
   rangesphere: 30
-  centrePoint: {fileID: 734996242}
+  centrePoint: {fileID: 562437339}
+  player: {fileID: 496577146}
+  detectionRadius: 10
 --- !u!195 &1375672376
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -9696,3 +9729,4 @@ SceneRoots:
   - {fileID: 541125093}
   - {fileID: 553640714}
   - {fileID: 534786491}
+  - {fileID: 562437339}

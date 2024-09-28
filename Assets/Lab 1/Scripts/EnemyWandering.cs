@@ -10,6 +10,9 @@ public class EnemyWandering : MonoBehaviour
     public float rangesphere;
 
     public Transform centrePoint; 
+    public Transform player;
+    public float detectionRadius = 10f;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -17,7 +20,13 @@ public class EnemyWandering : MonoBehaviour
 
     void Update()
     {
-        if (agent.remainingDistance <= agent.stoppingDistance)
+        float distanceToPlayer = Vector3.Distance(player.position, transform.position);
+
+        if (distanceToPlayer <= detectionRadius)
+        {
+            FollowPlayer();
+        }
+        else if (agent.remainingDistance <= agent.stoppingDistance)
         {
             Vector3 point;
             if (RandomPoint(centrePoint.position, rangesphere, out point)) 
@@ -43,5 +52,18 @@ public class EnemyWandering : MonoBehaviour
         return false;
     }
 
+    void FollowPlayer()
+    {
+        agent.destination = player.position;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (centrePoint != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(centrePoint.position, rangesphere);
+        }
+    }
 
 }
