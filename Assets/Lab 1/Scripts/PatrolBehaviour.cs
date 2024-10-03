@@ -9,11 +9,14 @@ public class PatrolBehavior : MonoBehaviour
     public Transform player;
     public float detectionRadius = 10f;
     private int currentPointIndex = 0;
+    [SerializeField] private bool isPositiveDirection;
     private NavMeshAgent agent;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        currentPointIndex = Random.Range(0, patrolPoints.Length);
+        isPositiveDirection = Random.Range(0, 2) == 0;
     }
     
     void Update()
@@ -40,6 +43,9 @@ public class PatrolBehavior : MonoBehaviour
     {
         if (patrolPoints.Length == 0) return;
         agent.destination = patrolPoints[currentPointIndex].position;
-        currentPointIndex = (currentPointIndex + 1) % patrolPoints.Length;
+        if(isPositiveDirection)
+            currentPointIndex = (currentPointIndex + 1) % patrolPoints.Length;
+        else 
+            currentPointIndex = (currentPointIndex - 1 + patrolPoints.Length) % patrolPoints.Length;
     }
 }
