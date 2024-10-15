@@ -11,8 +11,15 @@ public class FlockManager : MonoBehaviour
     public static FlockManager FM; 
     
     // The fish prefab to instantiate for each fish in the flock
-    public GameObject fishPrefab; 
-    
+    public GameObject fishPrefab1; 
+    public GameObject fishPrefab2; 
+    public GameObject fishPrefab3; 
+    public GameObject fishPrefab4; 
+    public GameObject fishPrefab5; 
+    public GameObject fishPrefab6;
+
+    private GameObject ghost;
+
     // Number of fish in the flock
     public int numFish = 6; 
     
@@ -47,6 +54,7 @@ public class FlockManager : MonoBehaviour
     // This method initializes the fish by spawning them within the defined limits
     void Start()
     {
+        ghost = fishPrefab1;
         // Initialize the array to hold all the fish
         allFish = new GameObject[numFish];
 
@@ -58,9 +66,33 @@ public class FlockManager : MonoBehaviour
                 Random.Range(-swimLimits.x, swimLimits.x),
                 0, //Random.Range(-swimLimits.y, swimLimits.y),  
                 Random.Range(-swimLimits.z, swimLimits.z));
-            
+
+            int type = Random.Range(0, 6);
+            switch (type)
+            {
+                case 0:
+                    ghost = fishPrefab1;
+                    break;
+                case 1:
+                    ghost = fishPrefab2;
+                    break;
+                case 2:
+                    ghost = fishPrefab3;
+                    break;
+                case 3:
+                    ghost = fishPrefab4;
+                    break;
+                case 4:
+                    ghost = fishPrefab5;
+                    break;
+                case 5:
+                    ghost = fishPrefab6;
+                    break;
+            }
             // Instantiate the fish prefab at the random position with no rotation
-            allFish[i] = Instantiate(fishPrefab, pos, Quaternion.identity);
+            allFish[i] = Instantiate(ghost, pos, Quaternion.identity);
+
+
         }
 
         // Set the static reference to this instance of FlockManager
