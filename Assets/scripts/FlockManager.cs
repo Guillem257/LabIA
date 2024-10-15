@@ -22,6 +22,9 @@ public class FlockManager : MonoBehaviour
 
     // Number of fish in the flock
     public int numFish = 6; 
+    public int numGhostLeads = 2;
+
+    public int leadGhostInfluence = 7;
     
     // Array to store all instantiated fish
     public GameObject[] allFish; 
@@ -57,6 +60,7 @@ public class FlockManager : MonoBehaviour
         ghost = fishPrefab1;
         // Initialize the array to hold all the fish
         allFish = new GameObject[numFish];
+        int leadIndex = 0; 
 
         // Loop to create and place each fish randomly within the swim limits
         for (int i = 0; i < numFish; i++)
@@ -92,6 +96,15 @@ public class FlockManager : MonoBehaviour
             // Instantiate the fish prefab at the random position with no rotation
             allFish[i] = Instantiate(ghost, pos, Quaternion.identity);
 
+            if(leadIndex <= numGhostLeads - 1)
+            {
+                allFish[i].GetComponent<Flock>().isGhostLead = true;
+                leadIndex++;
+            }
+            if(!allFish[i].GetComponent<Flock>().isGhostLead)
+            {
+                allFish[i].GetComponent<ParticleSystem>().Stop();
+            }
 
         }
 
@@ -99,21 +112,7 @@ public class FlockManager : MonoBehaviour
         FM = this;
         
         // Initialize the goal position as the FlockManager's position
-        goalPos = this.transform.position;
-    }
-
-    // Update is called once per frame
-    // Randomly updates the goal position for fish to swim towards
-    void Update()
-    {
-        // Occasionally change the goal position (10% chance each frame)
-        if (Random.Range(0, 100) < 10)
-        {
-            // Calculate a new random goal position within the swim limits
-            goalPos = this.transform.position + new Vector3(
-                Random.Range(-swimLimits.x, swimLimits.x),
-                //Random.Range(-swimLimits.y, swimLimits.y),  
-                Random.Range(-swimLimits.z, swimLimits.z));
-        }
-    }
+        if(numGhostLeads > 0)
+            goalPos = allFish[0].transform.position;
+    }   
 }

@@ -6,10 +6,15 @@ public class Flock : MonoBehaviour
 {
     float speed;
     bool turning = false;
+    public bool isGhostLead = false;
 
     void Start()
     {
         speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
+        if(isGhostLead)
+        {
+            speed = FlockManager.FM.maxSpeed;
+        }
     }
 
     void Update()
@@ -28,17 +33,25 @@ public class Flock : MonoBehaviour
         if (turning)
         {
             Vector3 direction = FlockManager.FM.transform.position - transform.position;
-            direction.y = 0; // Ignorar el eje Y en la dirección
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
         }
         else
         {
-            if (Random.Range(0, 100) < 10)
-            {
-                speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
-            }
+            // if (Random.Range(0, 100) < 10)
+            // {
+            //     speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
+            // }
 
-            if (Random.Range(0, 100) < 10)
+            // if (Random.Range(0, 100) < 10)
+            // {
+            //     ApplyFlockingRules();
+            // }
+
+            if( isGhostLead )
+            {
+                MoveGhostLead();
+            }
+            else
             {
                 ApplyFlockingRules();
             }
@@ -58,8 +71,23 @@ public class Flock : MonoBehaviour
         float nDistance;
         int groupSize = 0;
 
+        Flock nearestGhostLead = null;
+        float minGhostLeadDistance = Mathf.Infinity;
+        
         foreach (GameObject go in gos)
         {
+            Flock anotherFlock = go.GetComponent<Flock>();
+
+            if(anotherFlock.isGhostLead)
+            {
+                float distance = Vector3.Distance(go.transform.position, this.transform.position);
+                if(distance < minGhostLeadDistance)
+                {
+                    minGhostLeadDistance = distance;
+                    nearestGhostLead = anotherFlock;
+                }
+            }
+
             if (go != this.gameObject)
             {
                 nDistance = Vector3.Distance(go.transform.position, this.transform.position);
@@ -73,7 +101,6 @@ public class Flock : MonoBehaviour
                         vavoid += this.transform.position - go.transform.position;
                     }
 
-                    Flock anotherFlock = go.GetComponent<Flock>();
                     gSpeed += anotherFlock.speed;
                 }
             }
@@ -89,12 +116,31 @@ public class Flock : MonoBehaviour
                 speed = FlockManager.FM.maxSpeed;
             }
 
+            if(nearestGhostLead != null && minGhostLeadDistance < FlockManager.FM.leadGhostInfluence)
+            {
+                vcentre = nearestGhostLead.transform.position;
+            }
+
             Vector3 direction = (vcentre + vavoid) - this.transform.position;
-            direction.y = 0; // Ignorar el eje Y en la dirección
             if (direction != Vector3.zero)
             {
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
             }
         }
     }
+    public void MoveGhostLead(){
+        if(Random.Range(0, 100) < 10)
+        {
+            FlockManager.FM.goalPos = FlockManager.FM.transform.position + new Vector3(
+                Random.Range(-FlockManager.FM.swimLimits.x, FlockManager.FM.swimLimits.x),
+                Random.Range(-FlockManager.FM.swimLimits.y, FlockManager.FM.swimLimits.y),
+                Random.Range(-FlockManager.FM.swimLimits.z, FlockManager.FM.swimLimits.z));
+        }
+
+        Vector3 direction = FlockManager.FM.goalPos - transform.position;
+
+        if(direction != Vector3.zero)        
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
+    }
+        
 }
