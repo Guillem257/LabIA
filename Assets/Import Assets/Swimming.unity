@@ -172,7 +172,7 @@ MonoBehaviour:
   swimLimits: {x: 5, y: 5, z: 5}
   goalPos: {x: 0, y: 0, z: 0}
   minSpeed: 1
-  maxSpeed: 5
+  maxSpeed: 2.74
   neighbourDistance: 1
   rotationSpeed: 1
 --- !u!1 &262266758

@@ -14,7 +14,7 @@ public class FlockManager : MonoBehaviour
     public GameObject fishPrefab; 
     
     // Number of fish in the flock
-    public int numFish = 20; 
+    public int numFish = 6; 
     
     // Array to store all instantiated fish
     public GameObject[] allFish; 
@@ -40,7 +40,7 @@ public class FlockManager : MonoBehaviour
     public float neighbourDistance;
     
     // Rotation speed of the fish when changing direction (adjustable in Inspector)
-    [Range(1.0f, 5.0f)]
+    [Range(0.0f, 5.0f)]
     public float rotationSpeed;
 
     // Start is called before the first frame update
@@ -56,7 +56,7 @@ public class FlockManager : MonoBehaviour
             // Calculate a random position within the swim limits
             Vector3 pos = this.transform.position + new Vector3(
                 Random.Range(-swimLimits.x, swimLimits.x),
-                Random.Range(-swimLimits.y, swimLimits.y),  
+                //Random.Range(-swimLimits.y, swimLimits.y),  
                 Random.Range(-swimLimits.z, swimLimits.z));
             
             // Instantiate the fish prefab at the random position with no rotation
@@ -80,7 +80,7 @@ public class FlockManager : MonoBehaviour
             // Calculate a new random goal position within the swim limits
             goalPos = this.transform.position + new Vector3(
                 Random.Range(-swimLimits.x, swimLimits.x),
-                Random.Range(-swimLimits.y, swimLimits.y),  
+                //Random.Range(-swimLimits.y, swimLimits.y),  
                 Random.Range(-swimLimits.z, swimLimits.z));
         }
     }
