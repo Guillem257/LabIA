@@ -56,7 +56,7 @@ public class FlockManager : MonoBehaviour
             // Calculate a random position within the swim limits
             Vector3 pos = this.transform.position + new Vector3(
                 Random.Range(-swimLimits.x, swimLimits.x),
-                //Random.Range(-swimLimits.y, swimLimits.y),  
+                0, //Random.Range(-swimLimits.y, swimLimits.y),  
                 Random.Range(-swimLimits.z, swimLimits.z));
             
             // Instantiate the fish prefab at the random position with no rotation
