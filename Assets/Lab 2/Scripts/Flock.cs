@@ -1,119 +1,135 @@
-// using UnityEngine;
-// using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-// public class Flock2 : MonoBehaviour
-// {
-//     public float speed;
-//     private bool isLeader = false;
-//     private int currentPatrolPoint = 0;
+public class Flock : MonoBehaviour
+{
+    float speed;
+    bool turning = false;
+    public bool isGhostLead = false;
 
-//     void Start()
-//     {
-//         // Inicializa la velocidad del fantasma
-//         speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
+    void Start()
+    {
+        speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
+        if(isGhostLead)
+        {
+            speed = FlockManager.FM.maxSpeed;
+        }
+    }
 
-//         // Determina si este fantasma es un líder
-//         isLeader = FlockManager.FM.leaders.Contains(gameObject);
-//     }
+    void Update()
+    {
+        Bounds b = new Bounds(FlockManager.FM.transform.position, FlockManager.FM.swimLimits * 2);
 
-//     void Update()
-//     {
-//         // Comprueba los límites del área de patrullaje
-//         Bounds b = new Bounds(FlockManager.FM.transform.position, FlockManager.FM.swimLimits * 2);
-//         if (!b.Contains(transform.position))
-//         {
-//             Vector3 dir = FlockManager.FM.transform.position - transform.position;
-//             transform.rotation = Quaternion.Slerp(transform.rotation,
-//                                                   Quaternion.LookRotation(dir),
-//                                                   FlockManager.FM.rotationSpeed * Time.deltaTime);
-//             speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
-//         }
-//         else if (Random.Range(0, 100) < 10)
-//         {
-//             speed = Random.Range(FlockManager.FM.minSpeed, FlockManager.FM.maxSpeed);
-//         }
+        if (!b.Contains(transform.position))
+        {
+            turning = true;
+        }
+        else
+        {
+            turning = false;
+        }
 
-//         // Si es líder, sigue los puntos de patrullaje
-//         if (isLeader)
-//         {
-//             UpdatePatrolPoint();
-//         }
-//         // Si no es líder, aplica las reglas de flocking
-//         else
-//         {
-//             if (Random.Range(0, 100) < 10)
-//             {
-//                 ApplyFlockingRules();
-//             }
-//         }
+        if (turning)
+        {
+            Vector3 direction = FlockManager.FM.transform.position - transform.position;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
+        }
+        else
+        {
+            if( isGhostLead )
+            {
+                MoveGhostLead();
+            }
+            else
+            {
+                ApplyFlockingRules();
+            }
+        }
 
-//         // Movimiento general del fantasma
-//         transform.Translate(0, 0, speed * Time.deltaTime);
-//     }
+        transform.Translate(0, 0, speed * Time.deltaTime);
+    }
 
-//     void ApplyFlockingRules()
-//     {
-//         GameObject[] gos = FlockManager.FM.allGhost;
-//         List<GameObject> leaders = FlockManager.FM.leaders;
+    void ApplyFlockingRules()
+    {
+        GameObject[] gos = FlockManager.FM.allGhosts;
 
-//         Vector3 vcentre = Vector3.zero;
-//         Vector3 vavoid = Vector3.zero;
-//         float gSpeed = 0.01f;
-//         float nDistance;
-//         int groupSize = 0;
+        Vector3 vcentre = Vector3.zero;
+        Vector3 vavoid = Vector3.zero;
+        float gSpeed = 0.01f;
+        float nDistance;
+        int groupSize = 0;
 
-//         foreach (GameObject go in gos)
-//         {
-//             if (go != this.gameObject)
-//             {
-//                 nDistance = Vector3.Distance(go.transform.position, this.transform.position);
-//                 if (nDistance < FlockManager.FM.neighbourDistance)
-//                 {
-//                     float influence = leaders.Contains(go) ? 2f : 1f; // Mayor influencia si es líder
+        Flock nearestGhostLead = null;
+        float minGhostLeadDistance = Mathf.Infinity;
+        
+        foreach (GameObject go in gos)
+        {
+            Flock anotherFlock = go.GetComponent<Flock>();
 
-//                     vcentre += go.transform.position * influence;
-//                     groupSize += (int)influence;
+            if(anotherFlock.isGhostLead)
+            {
+                float distance = Vector3.Distance(go.transform.position, this.transform.position);
+                if(distance < minGhostLeadDistance)
+                {
+                    minGhostLeadDistance = distance;
+                    nearestGhostLead = anotherFlock;
+                }
+            }
 
-//                     if (nDistance < 1.0f)
-//                     {
-//                         vavoid += (this.transform.position - go.transform.position) * influence;
-//                     }
+            if (go != this.gameObject)
+            {
+                nDistance = Vector3.Distance(go.transform.position, this.transform.position);
+                if (nDistance < FlockManager.FM.neighbourDistance)
+                {
+                    vcentre += go.transform.position;
+                    groupSize++;
 
-//                     Flock anotherFlock = go.GetComponent<Flock>();
-//                     gSpeed += anotherFlock.speed * influence;
-//                 }
-//             }
-//         }
+                    if (nDistance < 1.0f)
+                    {
+                        vavoid += this.transform.position - go.transform.position;
+                    }
 
-//         if (groupSize > 0)
-//         {
-//             vcentre = vcentre / groupSize + (FlockManager.FM.goalPos - this.transform.position);
-//             speed = gSpeed / groupSize;
+                    gSpeed += anotherFlock.speed;
+                }
+            }
+        }
 
-//             Vector3 direction = (vcentre + vavoid) - this.transform.position;
-//             if (direction != Vector3.zero)
-//             {
-//                 transform.rotation = Quaternion.Slerp(transform.rotation,
-//                                                       Quaternion.LookRotation(direction),
-//                                                       FlockManager.FM.rotationSpeed * Time.deltaTime);
-//             }
-//         }
-//     }
+        if (groupSize > 0)
+        {
+            vcentre = vcentre / groupSize + (FlockManager.FM.goalPos - this.transform.position);
+            speed = gSpeed / groupSize;
 
-//     void UpdatePatrolPoint()
-//     {
-//         // Verificar si el líder está cerca del punto de patrullaje actual
-//         if (Vector3.Distance(transform.position, FlockManager.FM.patrolPoints[currentPatrolPoint].transform.position) < 1.0f)
-//         {
-//             // Cambiar al siguiente punto de patrullaje
-//             currentPatrolPoint = (currentPatrolPoint + 1) % FlockManager.FM.patrolPoints.Length;
-//         }
+            if (speed > FlockManager.FM.maxSpeed)
+            {
+                speed = FlockManager.FM.maxSpeed;
+            }
 
-//         // Moverse hacia el próximo punto de patrullaje
-//         Vector3 directionToNextPoint = (FlockManager.FM.patrolPoints[currentPatrolPoint].transform.position - transform.position).normalized;
-//         Quaternion lookRotation = Quaternion.LookRotation(directionToNextPoint);
-//         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, FlockManager.FM.rotationSpeed * Time.deltaTime);
+            if(nearestGhostLead != null && minGhostLeadDistance < FlockManager.FM.leadGhostInfluence)
+            {
+                vcentre = nearestGhostLead.transform.position;
+            }
 
-//         transform.Translate(Vector3.forward * speed * Time.deltaTime);
-//     }
-// }
+            Vector3 direction = (vcentre + vavoid) - this.transform.position;
+            if (direction != Vector3.zero)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
+            }
+        }
+    }
+    public void MoveGhostLead(){
+        if(Random.Range(0, 100) < 10)
+        {
+            FlockManager.FM.goalPos = FlockManager.FM.transform.position + new Vector3(
+                Random.Range(-FlockManager.FM.swimLimits.x, FlockManager.FM.swimLimits.x),
+                Random.Range(-FlockManager.FM.swimLimits.y, FlockManager.FM.swimLimits.y),
+                Random.Range(-FlockManager.FM.swimLimits.z, FlockManager.FM.swimLimits.z));
+        }
+
+        Vector3 direction = FlockManager.FM.goalPos - transform.position;
+
+        if(direction != Vector3.zero)        
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), FlockManager.FM.rotationSpeed * Time.deltaTime);
+    }
+        
+}

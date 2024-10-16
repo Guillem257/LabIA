@@ -6000,21 +6000,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c85c1269ad89ad51b6d8fd6e3751b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fishPrefab1: {fileID: 498253721416304272, guid: f6ab88624626d1249bd73bcb4a1c7d59, type: 3}
-  fishPrefab2: {fileID: 8406845055882037674, guid: 36621476210b2c649b8aeea96b7c2587, type: 3}
-  fishPrefab3: {fileID: 6007180743642840513, guid: 5a796ed211b2cec468ecadad11acb207, type: 3}
-  fishPrefab4: {fileID: 2602231374797837610, guid: 855c90c429434444fbe3ca2b5507ab04, type: 3}
-  fishPrefab5: {fileID: 5446477390807014373, guid: b713585f24f940f4eadb10319818ef40, type: 3}
-  fishPrefab6: {fileID: 2676405798547930095, guid: 4b5b08dfd84e3c342b10a4e2ed977d48, type: 3}
-  numFish: 100
-  numGhostLeads: 10
-  leadGhostInfluence: 7
-  allFish: []
+  ghostPrefab1: {fileID: 498253721416304272, guid: f6ab88624626d1249bd73bcb4a1c7d59, type: 3}
+  ghostPrefab2: {fileID: 8406845055882037674, guid: 36621476210b2c649b8aeea96b7c2587, type: 3}
+  ghostPrefab3: {fileID: 6007180743642840513, guid: 5a796ed211b2cec468ecadad11acb207, type: 3}
+  ghostPrefab4: {fileID: 2602231374797837610, guid: 855c90c429434444fbe3ca2b5507ab04, type: 3}
+  ghostPrefab5: {fileID: 5446477390807014373, guid: b713585f24f940f4eadb10319818ef40, type: 3}
+  ghostPrefab6: {fileID: 2676405798547930095, guid: 4b5b08dfd84e3c342b10a4e2ed977d48, type: 3}
+  numGhosts: 100
+  numGhostLeads: 2
+  leadGhostInfluence: 4
+  allGhosts: []
   swimLimits: {x: 15, y: 0, z: 15}
   goalPos: {x: 0, y: 0, z: 0}
   minSpeed: 0.4
   maxSpeed: 2
-  neighbourDistance: 2
+  neighbourDistance: 1
   rotationSpeed: 1
 --- !u!1001 &1863859262
 PrefabInstance:
