@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class EnemyWandering : MonoBehaviour 
 {
@@ -13,43 +14,74 @@ public class EnemyWandering : MonoBehaviour
     public float fovAngle = 60f;
     public LayerMask obstacleMask;
     private Camera tempCamera;
-    private bool playerDetected = false;
+    [SerializeField] private bool playerDetected = false;
+    private LineRenderer lineRenderer;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
 
-        // Crear cámara temporal simulada
         GameObject camObj = new GameObject("TempCam");
         tempCamera = camObj.AddComponent<Camera>();
         tempCamera.enabled = false;
         centrePoint = GameObject.Find("CenterPoint").transform;
         player = GameObject.Find("PlayerLab3").transform;
+
+        lineRenderer = GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            Debug.LogError("LineRenderer component not found!");
+        }
+        else
+        {
+            lineRenderer.positionCount = 4; // 4 points to form the shape
+        }
     }
 
     void Update()
     {
         if (PlayerInFOV())
         {
-            // Si se detecta al jugador, enviar la posición a todos los zombies usando BroadcastMessage
-            BroadcastMessage("OnPlayerDetected", player.position, SendMessageOptions.DontRequireReceiver);
+            foreach(GameObject enemy in SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                enemy.BroadcastMessage("OnPlayerDetected", player.position, SendMessageOptions.DontRequireReceiver);
+            }
             FollowPlayer();
         }
-        else if (!playerDetected && agent.remainingDistance <= agent.stoppingDistance)
+        else
         {
-            // Movimiento aleatorio si no hay jugador detectado
-            Vector3 point;
-            if (RandomPoint(centrePoint.position, rangesphere, out point)) 
+            playerDetected = false; // Reset playerDetected when player is not in FOV
+
+            if (!playerDetected && agent.remainingDistance <= agent.stoppingDistance)
             {
-                agent.SetDestination(point);
+                Vector3 point;
+                if (RandomPoint(centrePoint.position, rangesphere, out point)) 
+                {
+                    agent.SetDestination(point);
+                }
             }
         }
 
+        // Update LineRenderer positions to form the desired shape
+        if (lineRenderer != null)
+        {
+            Vector3[] localPositions = new Vector3[]
+            {
+                new Vector3(-6, 0.5f, 10),
+                new Vector3(6, 0.5f, 10),
+                new Vector3(0, 0.5f, 0),
+                new Vector3(-6, 0.5f, 10)
+            };
+
+            for (int i = 0; i < localPositions.Length; i++)
+            {
+                lineRenderer.SetPosition(i, transform.TransformPoint(localPositions[i]));
+            }
+        }
     }
 
     bool PlayerInFOV()
     {
-        // Configurar cámara simulada para calcular frustum
         tempCamera.transform.position = transform.position;
         tempCamera.transform.rotation = transform.rotation;
         tempCamera.fieldOfView = fovAngle;
@@ -60,7 +92,6 @@ public class EnemyWandering : MonoBehaviour
         Vector3[] frustumCorners = new Vector3[4];
         tempCamera.CalculateFrustumCorners(new Rect(0, 0, 1, 1), detectionRadius, Camera.MonoOrStereoscopicEye.Mono, frustumCorners);
 
-        // Verificar si el jugador está en el frustum y no hay obstáculos
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
