@@ -3,9 +3,9 @@ using UnityEngine.AI;
 
 public class Moves : MonoBehaviour
 {
-    public GameObject target; // Referencia al policía
+    public GameObject target;
     public Collider floor;
-    public float safeDistanceFromCop = 10f; // Distancia mínima para mantener al policía alejado
+    public float safeDistanceFromCop = 10f;
     GameObject[] hidingSpots;
     NavMeshAgent agent;
 
@@ -63,10 +63,10 @@ public class Moves : MonoBehaviour
         for (int i = 0; i < hidingSpots.Length; i++)
         {
             float distanceToCop = Vector3.Distance(hidingSpots[i].transform.position, target.transform.position);
-            if (distanceToCop >= safeDistanceFromCop) // Verifica que el escondite esté lo suficientemente lejos del policía
+            if (distanceToCop >= safeDistanceFromCop)
             {
                 Vector3 hideDir = hidingSpots[i].transform.position - target.transform.position;
-                Vector3 hidePos = hidingSpots[i].transform.position + hideDir.normalized /* * 1.5f */; // Pequeño desplazamiento para esconderse
+                Vector3 hidePos = hidingSpots[i].transform.position + hideDir.normalized;
 
                 float distanceToThief = Vector3.Distance(this.transform.position, hidePos);
                 if (distanceToThief < dist)
@@ -87,7 +87,7 @@ public class Moves : MonoBehaviour
             float rayDistance = 250.0f;
             if (hideCol.Raycast(backRay, out info, rayDistance))
             {
-                Seek(info.point + chosenDir.normalized); // Ir al punto más cercano del NavMesh detrás del escondite
+                Seek(info.point + chosenDir.normalized);
                 Debug.Log("Hiding target set to: " + info.point);
             }
         }

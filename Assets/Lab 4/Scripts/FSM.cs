@@ -9,9 +9,12 @@ public class FSM : MonoBehaviour
     Moves moves;
     UnityEngine.AI.NavMeshAgent agent;
 
-    private WaitForSeconds wait = new WaitForSeconds(0.05f); // == 1/20
+    private WaitForSeconds wait = new WaitForSeconds(0.05f);
     delegate IEnumerator State();
     private State state;
+
+    private bool hasReachedHidingSpot = false; 
+    private bool isHiding = false;            
 
     IEnumerator Start()
     {
@@ -34,7 +37,7 @@ public class FSM : MonoBehaviour
         {
             moves.Wander();
             yield return wait;
-        };
+        }
 
         state = Approaching;
     }
@@ -53,9 +56,9 @@ public class FSM : MonoBehaviour
             {
                 stolen = true;
                 break;
-            };
+            }
             yield return wait;
-        };
+        }
 
         if (stolen)
         {
@@ -70,15 +73,35 @@ public class FSM : MonoBehaviour
         }
     }
 
-
     IEnumerator Hiding()
     {
         Debug.Log("Hiding state");
 
-        while (true)
+        if (!hasReachedHidingSpot || Vector3.Distance(transform.position, cop.position) < moves.safeDistanceFromCop)
         {
             moves.Hide();
+            hasReachedHidingSpot = false; // Reiniciamos el estado para buscar un nuevo escondite
+            isHiding = false;
+        }
+
+        while (true)
+        {
+            if (!hasReachedHidingSpot && Vector3.Distance(transform.position, agent.destination) < 1.0f)
+            {
+                hasReachedHidingSpot = true;
+                isHiding = true;
+                Debug.Log("Reached hiding spot, now hiding.");
+            }
+
+            if (isHiding && Vector3.Distance(transform.position, cop.position) < moves.safeDistanceFromCop)
+            {
+                Debug.Log("Cop too close! Finding new hiding spot.");
+                hasReachedHidingSpot = false;
+                isHiding = false;
+                moves.Hide();
+            }
+
             yield return wait;
-        };
+        }
     }
 }
