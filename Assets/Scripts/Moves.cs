@@ -1,16 +1,11 @@
-/*  Source: 
-    Artificial Intelligence for Beginners
-    Penny de Byl
-    https://learn.unity.com/course/artificial-intelligence-for-beginners
-*/
-
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class Moves : MonoBehaviour
 {
-    public GameObject target;
+    public GameObject target; // Referencia al policía
     public Collider floor;
+    public float safeDistanceFromCop = 10f; // Distancia mínima para mantener al policía alejado
     GameObject[] hidingSpots;
     NavMeshAgent agent;
 
@@ -31,58 +26,31 @@ public class Moves : MonoBehaviour
         agent.SetDestination(this.transform.position - fleeVector);
     }
 
-    public void Pursue()
-    {
-        Vector3 targetDir = target.transform.position - this.transform.position;
-
-        float relativeHeading = Vector3.Angle(this.transform.forward, this.transform.TransformVector(target.transform.forward));
-
-        float toTarget = Vector3.Angle(this.transform.forward, this.transform.TransformVector(targetDir));
-
-//        if ((toTarget > 90 && relativeHeading < 20) || ds.currentSpeed < 0.01f)
-        if ((toTarget > 90 && relativeHeading < 20))
-        {
-            Seek(target.transform.position);
-            return;
-        }
-
-//        float lookAhead = targetDir.magnitude / (agent.speed + ds.currentSpeed);
-        float lookAhead = targetDir.magnitude / (agent.speed);
-        Seek(target.transform.position + target.transform.forward * lookAhead);
-    }
-
-    public void Evade()
-    {
-        Vector3 targetDir = target.transform.position - this.transform.position;
-//        float lookAhead = targetDir.magnitude / (agent.speed + ds.currentSpeed);
-        float lookAhead = targetDir.magnitude / agent.speed;
-        Flee(target.transform.position + target.transform.forward * lookAhead);
-    }
-
-
     Vector3 wanderTarget = Vector3.zero;
+
     public void Wander()
     {
-        float wanderRadius = 10;
-        float wanderDistance = 10;
-        float wanderJitter = 1;
+        float wanderRadius = 2;
+        float wanderDistance = 4;
+        float wanderJitter = 3;
 
-        wanderTarget += new Vector3(Random.Range(-1.0f, 1.0f) * wanderJitter,
-                                        0,
-                                        Random.Range(-1.0f, 1.0f) * wanderJitter);
+        wanderTarget += new Vector3(Random.Range(-1.0f, 1.0f) * wanderJitter, 0, Random.Range(-1.0f, 1.0f) * wanderJitter);
         wanderTarget.Normalize();
         wanderTarget *= wanderRadius;
 
         Vector3 targetLocal = wanderTarget + new Vector3(0, 0, wanderDistance);
-        Vector3 targetWorld = this.gameObject.transform.InverseTransformVector(targetLocal);
+        Vector3 targetWorld = transform.TransformPoint(targetLocal);
 
-        if (!floor.bounds.Contains(targetWorld))
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(targetWorld, out hit, 1.0f, NavMesh.AllAreas))
         {
-            targetWorld = -transform.position * 0.1f;
-
-        };
-
-        Seek(targetWorld);
+            agent.SetDestination(hit.position);
+            Debug.Log("Wander target set to: " + hit.position);
+        }
+        else
+        {
+            Debug.Log("Wander target is out of NavMesh bounds.");
+        }
     }
 
     public void Hide()
@@ -90,30 +58,42 @@ public class Moves : MonoBehaviour
         float dist = Mathf.Infinity;
         Vector3 chosenSpot = Vector3.zero;
         Vector3 chosenDir = Vector3.zero;
-        GameObject chosenGO = hidingSpots[0];
+        GameObject chosenGO = null;
 
         for (int i = 0; i < hidingSpots.Length; i++)
         {
-            Vector3 hideDir = hidingSpots[i].transform.position - target.transform.position;
-            Vector3 hidePos = hidingSpots[i].transform.position + hideDir.normalized * 100;
-
-            if (Vector3.Distance(target.transform.position, hidePos) < dist)
+            float distanceToCop = Vector3.Distance(hidingSpots[i].transform.position, target.transform.position);
+            if (distanceToCop >= safeDistanceFromCop) // Verifica que el escondite esté lo suficientemente lejos del policía
             {
-                chosenSpot = hidePos;
-                chosenDir = hideDir;
-                chosenGO = hidingSpots[i];
-                dist = Vector3.Distance(this.transform.position, hidePos);
+                Vector3 hideDir = hidingSpots[i].transform.position - target.transform.position;
+                Vector3 hidePos = hidingSpots[i].transform.position + hideDir.normalized /* * 1.5f */; // Pequeño desplazamiento para esconderse
+
+                float distanceToThief = Vector3.Distance(this.transform.position, hidePos);
+                if (distanceToThief < dist)
+                {
+                    chosenSpot = hidePos;
+                    chosenDir = hideDir;
+                    chosenGO = hidingSpots[i];
+                    dist = distanceToThief;
+                }
             }
         }
 
-        Collider hideCol = chosenGO.GetComponent<Collider>();
-        Ray backRay = new Ray(chosenSpot, -chosenDir.normalized);
-        RaycastHit info;
-        float distance = 250.0f;
-        hideCol.Raycast(backRay, out info, distance);
-
-
-        Seek(info.point + chosenDir.normalized);
-
+        if (chosenGO != null)
+        {
+            Collider hideCol = chosenGO.GetComponent<Collider>();
+            Ray backRay = new Ray(chosenSpot, -chosenDir.normalized);
+            RaycastHit info;
+            float rayDistance = 250.0f;
+            if (hideCol.Raycast(backRay, out info, rayDistance))
+            {
+                Seek(info.point + chosenDir.normalized); // Ir al punto más cercano del NavMesh detrás del escondite
+                Debug.Log("Hiding target set to: " + info.point);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No suitable hiding spot found far enough from the cop!");
+        }
     }
 }
