@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a7c8ca992f915438a96c2077353778, type: 3}
   m_Name: EnemyBehaviour
   m_EditorClassIdentifier: 
-  brickName: Assets/Lab 4 - 5/EnemyBehaviour.asset
+  brickName: Assets/Lab 4 - 5/ScriptsBehaviourTree/EnemyBehaviour.asset
   xml: "\uFEFF<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<BehaviorBricks xmlns:ref=\"urn:padaone\"
     version=\"1.0\">\r\n  <BehaviorTree id=\"0\" />\r\n  <runtimeInfo>\r\n    <BehaviorTree
     id=\"0\" guid=\"e4fae8a4702e31e4f9038a2fd4efae94\" nextId=\"31\">\r\n      <root>\r\n       
